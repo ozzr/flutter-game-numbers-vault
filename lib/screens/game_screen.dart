@@ -316,6 +316,7 @@ class _GameScreenContentState extends State<_GameScreenContent> {
             // Selector de modo de juego
             if (!gameState.gameCompleted)
               Column(
+                
                 children: [
                   GameModeSelector(
                     selectedMode: gameState.gameMode,
@@ -421,19 +422,23 @@ class _GameScreenContentState extends State<_GameScreenContent> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: List.generate(
-                      widget.level.digits,
-                      (index) => SizedBox(
-                        width: 60,
-                        child: DigitInputField(
-                          controller: _controllers[index],
-                          onChanged: (value) {
-                            if (value.isEmpty && index > 0) {
-                              FocusScope.of(context).previousFocus();
-                            }
-                          },
+                  Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: List.generate(
+                        widget.level.digits,
+                        (index) => SizedBox(
+                          width: 60,
+                          child: DigitInputField(
+                            controller: _controllers[index],
+                            onChanged: (value) {
+                              if (value.isEmpty && index > 0) {
+                                FocusScope.of(context).previousFocus();
+                              }
+                            },
+                          ),
                         ),
                       ),
                     ),
