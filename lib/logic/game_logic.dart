@@ -11,7 +11,10 @@ class RandomNumberStore {
   /// Genera una lista de números aleatorios de un dígito (0-9)
   List<int> _generateRandomNumbers(int length) {
     final rand = Random();
-    return List.generate(length, (_) => rand.nextInt(10));
+    // return List.generate(length, (_) => rand.nextInt(10));
+    List<int> l = List.generate(length, (_) => rand.nextInt(10));
+    print(l);
+    return l;
   }
 
   /// Devuelve los números almacenados
@@ -42,10 +45,7 @@ class RandomNumberStore {
       }
     }
 
-    return {
-      "correctPosition": correctPosition,
-      "wrongPosition": wrongPosition,
-    };
+    return {"correctPosition": correctPosition, "wrongPosition": wrongPosition};
   }
 }
 

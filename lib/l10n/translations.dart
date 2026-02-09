@@ -36,6 +36,10 @@ const Map<String, Map<String, String>> kTranslations = {
     'attempts_remaining_label': 'Attempts remaining: {n}',
     'time_over': 'Time is up',
     'attempts_over': 'No attempts left. The answer was: {answer}',
+    'mode_unlimited': 'No limits',
+    'mode_timed': 'Timed mode',
+    'mode_limited_count': 'Limited attempts',
+    'mode_both': 'Time & Attempts',
   },
   'es': {
     'locked_requirement': 'Bloqueado (completa 10 partidas del nivel anterior)',
@@ -92,8 +96,10 @@ const Map<String, Map<String, String>> kTranslations = {
     'average_time_label': 'Tiempo promedio',
     'mode_label': 'Modo de juego',
     'mode_take_your_time': 'Sin límite',
+    'mode_unlimited': 'Sin límite',
     'mode_timed': 'Con tiempo',
     'mode_limited_count': 'Intentos limitados',
+    'mode_both': 'Tiempo e intentos',
     'digits_word': 'dígitos',
   },
   'fr': {

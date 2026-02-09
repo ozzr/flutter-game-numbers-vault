@@ -96,6 +96,7 @@ class Level {
   Duration? averageTime;
   int totalSessions;
   int completedSessions;
+  int currentAttempt; // Conteo de intento actual en este nivel (1-based)
 
   Level({
     required this.digits,
@@ -104,6 +105,7 @@ class Level {
     this.averageTime,
     this.totalSessions = 0,
     this.completedSessions = 0,
+    this.currentAttempt = 1,
   });
 
   Map<String, dynamic> toJson() => {
@@ -113,6 +115,7 @@ class Level {
     'averageTime': averageTime?.inMilliseconds,
     'totalSessions': totalSessions,
     'completedSessions': completedSessions,
+    'currentAttempt': currentAttempt,
   };
 
   factory Level.fromJson(Map<String, dynamic> json) => Level(
@@ -124,6 +127,7 @@ class Level {
         : null,
     totalSessions: json['totalSessions'] as int? ?? 0,
     completedSessions: json['completedSessions'] as int? ?? 0,
+    currentAttempt: json['currentAttempt'] as int? ?? 1,
   );
 }
 

@@ -29,7 +29,12 @@ class GameScreen extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) {
         final notifier = GameStateNotifier();
-        notifier.initializeGame(level.digits, timeLimit, maxAttempts);
+        notifier.initializeGame(
+          level.digits,
+          level.currentAttempt,
+          timeLimit: timeLimit,
+          maxAttempts: maxAttempts,
+        );
         return notifier;
       },
       child: Consumer<GameStateNotifier>(
@@ -75,10 +80,16 @@ class _GameScreenContentState extends State<_GameScreenContent> {
       (_) => TextEditingController(),
     );
 
-    // Listener para detectar fin del juego
+    // Listener para detectar fin del juego y auto-start timer
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final gameState = context.read<GameStateNotifier>();
       gameState.addListener(_onGameStateChanged);
+
+      // Auto-start timer if in timed or both mode
+      if ((gameState.gameMode == 'timed' || gameState.gameMode == 'both') &&
+          gameState.timeLimit < 999999) {
+        gameState.startTimer(_onTimeOver);
+      }
     });
   }
 
@@ -86,11 +97,9 @@ class _GameScreenContentState extends State<_GameScreenContent> {
     final gameState = context.read<GameStateNotifier>();
     if (gameState.gameCompleted && !_gameEndedCalled) {
       _gameEndedCalled = true;
-      // Determinar si el juego se completó o falló
       final completed =
           gameState.attemptsHistory.isNotEmpty &&
           gameState.attemptsHistory.last.correctPosition == widget.level.digits;
-      // Build localized message from notifier reason key
       String? message;
       final reasonKey = gameState.endReasonKey;
       if (reasonKey != null) {
@@ -99,6 +108,11 @@ class _GameScreenContentState extends State<_GameScreenContent> {
       }
       _endGame(completed: completed, message: message);
     }
+  }
+
+  void _onTimeOver() {
+    // Timer callback - notifyListeners will trigger _onGameStateChanged
+    // which handles the game end logic
   }
 
   bool _gameEndedCalled = false;
@@ -143,6 +157,9 @@ class _GameScreenContentState extends State<_GameScreenContent> {
         ? gameState.endTime!.difference(gameState.startTime!)
         : Duration.zero;
 
+    // Capturar el número de intento actual ANTES de incrementarlo
+    final currentAttemptNumber = widget.level.currentAttempt;
+
     final session = GameSession(
       levelDigits: widget.level.digits,
       gameMode: gameState.gameMode,
@@ -161,6 +178,13 @@ class _GameScreenContentState extends State<_GameScreenContent> {
     // Capturar datos antes de posible dispose
     final attempts = gameState.attempts;
 
+    // Actualizar contador de intentos en el nivel
+    if (completed) {
+      // Si se completó exitosamente, incrementar para el próximo intento en el mismo nivel
+      widget.level.currentAttempt++;
+    }
+    // Si no se completó, mantener igual para reintentar el mismo modo
+
     // Guardar la sesión
     widget.playerDataService.addGameSession(widget.initialPlayerData, session);
 
@@ -172,6 +196,7 @@ class _GameScreenContentState extends State<_GameScreenContent> {
           timeTaken: timeTaken,
           message: message,
           attempts: attempts,
+          attemptNumber: currentAttemptNumber,
         );
       }
     });
@@ -182,6 +207,7 @@ class _GameScreenContentState extends State<_GameScreenContent> {
     required Duration timeTaken,
     String? message,
     required int attempts,
+    required int attemptNumber,
   }) {
     final minimumAttempts = MinimumAttemptsCalculator.calculateMinimumAttempts(
       widget.level.digits,
@@ -241,6 +267,8 @@ class _GameScreenContentState extends State<_GameScreenContent> {
                 ),
                 child: Column(
                   children: [
+                    _ResultRow(label: 'Intento:', value: '$attemptNumber'),
+                    const SizedBox(height: 8),
                     _ResultRow(
                       label: AppLocalizations.of(context).tr('attempts_made'),
                       value: '$attempts',
@@ -306,10 +334,19 @@ class _GameScreenContentState extends State<_GameScreenContent> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          AppLocalizations.of(
-            context,
-          ).tr('level_title', {'digits': '${widget.level.digits}'}),
+        title: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              AppLocalizations.of(
+                context,
+              ).tr('level_title', {'digits': '${widget.level.digits}'}),
+            ),
+            Text(
+              'Intento ${widget.level.currentAttempt}',
+              style: const TextStyle(fontSize: 12),
+            ),
+          ],
         ),
         centerTitle: true,
         elevation: 0,
@@ -319,26 +356,56 @@ class _GameScreenContentState extends State<_GameScreenContent> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Selector de modo de juego
+            // Game mode indicator
             if (!gameState.gameCompleted)
-              Column(
-                children: [
-                  GameModeSelector(
-                    selectedMode: gameState.gameMode,
-                    onModeChanged: (newMode) {
-                      gameState.handleGameModeChange(
-                        newMode,
-                        widget.gameState.timeLimit,
-                        widget.gameState.maxAttempts,
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                ],
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.amber.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.amber, width: 2),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      gameState.gameMode == 'unlimited'
+                          ? Icons.check_circle
+                          : gameState.gameMode == 'timed'
+                          ? Icons.timer
+                          : gameState.gameMode == 'limited_count'
+                          ? Icons.format_list_numbered
+                          : Icons.layers,
+                      color: Colors.amber,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      AppLocalizations.of(context).tr(
+                        gameState.gameMode == 'unlimited'
+                            ? 'mode_unlimited'
+                            : gameState.gameMode == 'timed'
+                            ? 'mode_timed'
+                            : gameState.gameMode == 'limited_count'
+                            ? 'mode_limited_count'
+                            : 'mode_both',
+                      ),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.amber,
+                      ),
+                    ),
+                  ],
+                ),
               ),
 
-            // Timer o contador de intentos
-            if (!gameState.gameCompleted && gameState.gameMode == 'timed')
+            if (!gameState.gameCompleted) const SizedBox(height: 16),
+
+            // Display timer if in timed or both mode
+            if (!gameState.gameCompleted &&
+                (gameState.gameMode == 'timed' || gameState.gameMode == 'both'))
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -363,7 +430,7 @@ class _GameScreenContentState extends State<_GameScreenContent> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Tiempo: ${_formatDuration(Duration(seconds: gameState.timeRemaining))}',
+                      '${AppLocalizations.of(context).tr('time_label_prefix')}${_formatDuration(Duration(seconds: gameState.timeRemaining))}',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -374,9 +441,12 @@ class _GameScreenContentState extends State<_GameScreenContent> {
                     ),
                   ],
                 ),
-              )
-            else if (!gameState.gameCompleted &&
-                gameState.gameMode == 'limited_count')
+              ),
+
+            // Display attempts if in limited_count or both mode
+            if (!gameState.gameCompleted &&
+                (gameState.gameMode == 'limited_count' ||
+                    gameState.gameMode == 'both'))
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -401,7 +471,10 @@ class _GameScreenContentState extends State<_GameScreenContent> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Intentos restantes: ${gameState.attemptsRemaining}',
+                      AppLocalizations.of(context).tr(
+                        'attempts_remaining_label',
+                        {'n': '${gameState.attemptsRemaining}'},
+                      ),
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -454,9 +527,9 @@ class _GameScreenContentState extends State<_GameScreenContent> {
                   const SizedBox(height: 20),
                   SizedBox(
                     width: double.infinity,
-                    child: AppButton(
-                      label: AppLocalizations.of(context).tr('validate'),
+                    child: ElevatedButton(
                       onPressed: _validateGuess,
+                      child: Text(AppLocalizations.of(context).tr('validate')),
                     ),
                   ),
                 ],
