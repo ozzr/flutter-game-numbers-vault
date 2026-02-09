@@ -431,6 +431,7 @@ class _GameScreenContentState extends State<_GameScreenContent> {
                   const SizedBox(height: 16),
                   Center(
                     child: Row(
+                      spacing: 6,
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.start,
