@@ -170,7 +170,9 @@ class LevelCard extends StatelessWidget {
                     Column(
                       children: [
                         Text(
-                          "Mejor: $highScore intentos",
+                          AppLocalizations.of(
+                            context,
+                          ).tr('best_score', {'score': '$highScore'}),
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey.shade600,
@@ -178,7 +180,9 @@ class LevelCard extends StatelessWidget {
                         ),
                         if (totalSessions != null)
                           Text(
-                            "Partidas: $totalSessions",
+                            AppLocalizations.of(
+                              context,
+                            ).tr('total_games', {'count': '$totalSessions'}),
                             style: TextStyle(
                               fontSize: 11,
                               color: Colors.grey.shade500,

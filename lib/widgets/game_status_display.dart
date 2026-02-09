@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/static_widgets.dart';
+import '../l10n/app_localizations.dart';
 
 /// Timers y contadores de intentos widget optimizado
 class GameTimerDisplay extends StatelessWidget {
@@ -30,7 +31,7 @@ class GameTimerDisplay extends StatelessWidget {
           Icon(Icons.timer, color: isWarning ? Colors.red : Colors.blue),
           StaticWidgets.spacingH8,
           Text(
-            'Tiempo: ${Duration(seconds: timeRemaining).toString().split('.').first}',
+            '${AppLocalizations.of(context).tr('time_label_prefix')}${Duration(seconds: timeRemaining).toString().split('.').first}',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -71,7 +72,7 @@ class AttemptsRemainingDisplay extends StatelessWidget {
           ),
           StaticWidgets.spacingH8,
           Text(
-            'Intentos restantes: $attemptsRemaining',
+            '${AppLocalizations.of(context).tr('attempts_remaining_label', {'n': '$attemptsRemaining'})}',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/models.dart';
+import '../l10n/app_localizations.dart';
 import 'reusable_widgets.dart';
 import 'static_widgets.dart';
 
@@ -19,7 +20,7 @@ class AttemptsHistorySection extends StatelessWidget {
       children: [
         StaticWidgets.spacing24,
         Text(
-          'Historial de intentos',
+          AppLocalizations.of(context).tr('attempts_history'),
           style: Theme.of(
             context,
           ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),

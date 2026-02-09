@@ -41,7 +41,16 @@ class GameUtils {
     return digits.toSet().length;
   }
 
-  /// Calcula la dificultad relativa del nivel
+  /// Calcula la dificultad relativa del nivel (retorna clave de traducción)
+  static String getDifficultyLabelKey(int digits) {
+    if (digits <= 2) return 'difficulty_easy';
+    if (digits <= 3) return 'difficulty_medium';
+    if (digits <= 4) return 'difficulty_hard';
+    return 'difficulty_very_hard';
+  }
+
+  /// DEPRECATED: Use getDifficultyLabelKey() instead
+  @Deprecated('Use getDifficultyLabelKey()')
   static String getDifficultyLabel(int digits) {
     if (digits <= 2) return 'Fácil';
     if (digits <= 3) return 'Medio';

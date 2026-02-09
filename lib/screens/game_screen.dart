@@ -200,7 +200,9 @@ class _GameScreenContentState extends State<_GameScreenContent> {
       barrierDismissible: false,
       builder: (context) => AlertDialog(
         title: Text(
-          completed ? '¡Felicidades!' : 'Juego terminado',
+          completed
+              ? AppLocalizations.of(context).tr('congrats')
+              : AppLocalizations.of(context).tr('game_finished'),
           style: TextStyle(color: completed ? Colors.green : Colors.orange),
         ),
         content: SingleChildScrollView(
@@ -304,7 +306,11 @@ class _GameScreenContentState extends State<_GameScreenContent> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Nivel ${widget.level.digits} dígitos'),
+        title: Text(
+          AppLocalizations.of(
+            context,
+          ).tr('level_title', {'digits': '${widget.level.digits}'}),
+        ),
         centerTitle: true,
         elevation: 0,
       ),
@@ -316,7 +322,6 @@ class _GameScreenContentState extends State<_GameScreenContent> {
             // Selector de modo de juego
             if (!gameState.gameCompleted)
               Column(
-                
                 children: [
                   GameModeSelector(
                     selectedMode: gameState.gameMode,
@@ -416,7 +421,9 @@ class _GameScreenContentState extends State<_GameScreenContent> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Ingresa la contraseña de ${widget.level.digits} dígitos',
+                    AppLocalizations.of(
+                      context,
+                    ).tr('enter_password', {'n': '${widget.level.digits}'}),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -447,7 +454,7 @@ class _GameScreenContentState extends State<_GameScreenContent> {
                   SizedBox(
                     width: double.infinity,
                     child: AppButton(
-                      label: 'Validar',
+                      label: AppLocalizations.of(context).tr('validate'),
                       onPressed: _validateGuess,
                     ),
                   ),
@@ -461,7 +468,7 @@ class _GameScreenContentState extends State<_GameScreenContent> {
                 children: [
                   const SizedBox(height: 24),
                   Text(
-                    'Historial de intentos',
+                    AppLocalizations.of(context).tr('attempts_history'),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),

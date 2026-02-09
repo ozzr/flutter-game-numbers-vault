@@ -76,6 +76,26 @@ class MinimumAttemptsCalculator {
   }
 
   /// Proporciona recomendaciones basadas en el número de intentos realizados
+  /// Retorna una clave de traducción que debe localizarse en la UI
+  static String getAttemptFeedbackKey(int attempts, int minimumTheoretical) {
+    final ratio = attempts / minimumTheoretical;
+
+    if (ratio <= 1.2) {
+      return "excellent_feedback";
+    } else if (ratio <= 1.5) {
+      return "very_good_feedback";
+    } else if (ratio <= 2.0) {
+      return "good_feedback";
+    } else if (ratio <= 3.0) {
+      return "completed_feedback";
+    } else {
+      return "practice_feedback";
+    }
+  }
+
+  /// Proporciona recomendaciones basadas en el número de intentos realizados
+  /// DEPRECATED: Use getAttemptFeedbackKey() instead, localize in UI
+  @Deprecated('Use getAttemptFeedbackKey() and localize in UI')
   static String getAttemptFeedback(int attempts, int minimumTheoretical) {
     final ratio = attempts / minimumTheoretical;
 
