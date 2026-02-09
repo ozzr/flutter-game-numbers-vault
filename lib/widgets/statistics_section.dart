@@ -1,0 +1,42 @@
+import 'package:flutter/material.dart';
+import '../models/models.dart';
+import '../utils/game_utils.dart';
+import 'reusable_widgets.dart';
+
+/// Widget optimizado para mostrar estadísticas (const constructor)
+class StatisticsSection extends StatelessWidget {
+  final PlayerData playerData;
+
+  const StatisticsSection({Key? key, required this.playerData})
+    : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final avgTime = playerData.averageResolutionTime == null
+        ? "N/A"
+        : GameUtils.formatDuration(playerData.averageResolutionTime!);
+
+    return GridView.count(
+      crossAxisCount: 2,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisSpacing: 12,
+      mainAxisSpacing: 12,
+      childAspectRatio: 1.2,
+      children: [
+        StatCard(
+          title: 'Contraseñas crackeadas',
+          value: playerData.totalPasswordsCracked.toString(),
+          icon: Icons.lock_open,
+          iconColor: Colors.green,
+        ),
+        StatCard(
+          title: 'Tiempo promedio',
+          value: avgTime,
+          icon: Icons.timer,
+          iconColor: Colors.blue,
+        ),
+      ],
+    );
+  }
+}
