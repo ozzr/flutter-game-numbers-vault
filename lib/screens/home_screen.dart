@@ -17,10 +17,10 @@ class HomeScreen extends StatelessWidget {
   final PlayerDataService playerDataService;
 
   const HomeScreen({
-    Key? key,
+    super.key,
     required this.initialPlayerData,
     required this.playerDataService,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

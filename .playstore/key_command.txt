@@ -1,0 +1,1 @@
+keytool -genkey -v -keystore D:\Workbench\flutter\numbers_vault\.playstore\numbers_vault.keystore -alias numbers_vault -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Osmany Reyes, OU=N/A, O=N/A, L=Hermosillo, ST=Sonora, C=MEX" -storepass /3lOGooB8qdSugJCqKqMeRkKqNgstM227ZWQ3j+Vzas/YPVtWD8kUigoEB0LGPzX -keypass /3lOGooB8qdSugJCqKqMeRkKqNgstM227ZWQ3j+Vzas/YPVtWD8kUigoEB0LGPzX

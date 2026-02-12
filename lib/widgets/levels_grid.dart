@@ -7,8 +7,7 @@ class LevelsGrid extends StatelessWidget {
   final List<Level> levels;
   final ValueChanged<Level> onLevelTap;
 
-  const LevelsGrid({Key? key, required this.levels, required this.onLevelTap})
-    : super(key: key);
+  const LevelsGrid({super.key, required this.levels, required this.onLevelTap});
 
   @override
   Widget build(BuildContext context) {

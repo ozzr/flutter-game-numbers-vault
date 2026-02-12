@@ -8,8 +8,7 @@ import 'static_widgets.dart';
 class AttemptsHistorySection extends StatelessWidget {
   final List<GameAttempt> attemptsHistory;
 
-  const AttemptsHistorySection({Key? key, required this.attemptsHistory})
-    : super(key: key);
+  const AttemptsHistorySection({super.key, required this.attemptsHistory});
 
   @override
   Widget build(BuildContext context) {

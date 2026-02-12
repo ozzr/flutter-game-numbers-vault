@@ -10,13 +10,13 @@ class AppButton extends StatelessWidget {
   final ButtonStyle? style;
 
   const AppButton({
-    Key? key,
+    super.key,
     required this.label,
     required this.onPressed,
     this.isLoading = false,
     this.enabled = true,
     this.style,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -53,12 +53,12 @@ class DigitInputField extends StatefulWidget {
   final String hintText;
 
   const DigitInputField({
-    Key? key,
+    super.key,
     required this.onChanged,
     this.validator,
     this.controller,
     this.hintText = "0",
-  }) : super(key: key);
+  });
 
   @override
   State<DigitInputField> createState() => _DigitInputFieldState();
@@ -130,14 +130,14 @@ class LevelCard extends StatelessWidget {
   final int? totalSessions;
 
   const LevelCard({
-    Key? key,
+    super.key,
     required this.digits,
     required this.isUnlocked,
     this.highScore,
     this.averageTime,
     required this.onTap,
     this.totalSessions,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -218,12 +218,12 @@ class StatCard extends StatelessWidget {
   final Color iconColor;
 
   const StatCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.value,
     required this.icon,
     this.iconColor = Colors.blue,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -265,12 +265,12 @@ class AttemptHistoryCard extends StatelessWidget {
   final int wrongPosition;
 
   const AttemptHistoryCard({
-    Key? key,
+    super.key,
     required this.attemptNumber,
     required this.guess,
     required this.correctPosition,
     required this.wrongPosition,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -368,10 +368,10 @@ class GameModeSelector extends StatelessWidget {
   final ValueChanged<String> onModeChanged;
 
   const GameModeSelector({
-    Key? key,
+    super.key,
     required this.selectedMode,
     required this.onModeChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

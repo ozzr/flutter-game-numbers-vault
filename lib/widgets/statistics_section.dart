@@ -8,8 +8,7 @@ import 'reusable_widgets.dart';
 class StatisticsSection extends StatelessWidget {
   final PlayerData playerData;
 
-  const StatisticsSection({Key? key, required this.playerData})
-    : super(key: key);
+  const StatisticsSection({super.key, required this.playerData});
 
   @override
   Widget build(BuildContext context) {

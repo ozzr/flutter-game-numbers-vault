@@ -8,10 +8,10 @@ class GameTimerDisplay extends StatelessWidget {
   final int maxTime;
 
   const GameTimerDisplay({
-    Key? key,
+    super.key,
     required this.timeRemaining,
     required this.maxTime,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -48,8 +48,7 @@ class GameTimerDisplay extends StatelessWidget {
 class AttemptsRemainingDisplay extends StatelessWidget {
   final int attemptsRemaining;
 
-  const AttemptsRemainingDisplay({Key? key, required this.attemptsRemaining})
-    : super(key: key);
+  const AttemptsRemainingDisplay({super.key, required this.attemptsRemaining});
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +71,7 @@ class AttemptsRemainingDisplay extends StatelessWidget {
           ),
           StaticWidgets.spacingH8,
           Text(
-            '${AppLocalizations.of(context).tr('attempts_remaining_label', {'n': '$attemptsRemaining'})}',
+            AppLocalizations.of(context).tr('attempts_remaining_label', {'n': '$attemptsRemaining'}),
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,

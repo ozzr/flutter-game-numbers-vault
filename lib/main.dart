@@ -39,10 +39,10 @@ class MyApp extends StatelessWidget {
   final PlayerDataService playerDataService;
 
   const MyApp({
-    Key? key,
+    super.key,
     required this.playerData,
     required this.playerDataService,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

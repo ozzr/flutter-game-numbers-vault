@@ -15,11 +15,11 @@ class GameScreen extends StatelessWidget {
   final PlayerDataService playerDataService;
 
   const GameScreen({
-    Key? key,
+    super.key,
     required this.level,
     required this.initialPlayerData,
     required this.playerDataService,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -58,12 +58,11 @@ class _GameScreenContent extends StatefulWidget {
   final GameStateNotifier gameState;
 
   const _GameScreenContent({
-    Key? key,
     required this.level,
     required this.initialPlayerData,
     required this.playerDataService,
     required this.gameState,
-  }) : super(key: key);
+  });
 
   @override
   State<_GameScreenContent> createState() => _GameScreenContentState();
