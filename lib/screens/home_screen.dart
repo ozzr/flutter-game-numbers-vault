@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/models.dart';
@@ -11,6 +13,7 @@ import '../l10n/app_localizations.dart';
 import '../l10n/translations.dart';
 import '../providers/locale_provider.dart';
 import '../providers/player_data_provider.dart';
+import '../providers/theme_provider.dart';
 
 class HomeScreen extends StatelessWidget {
   final PlayerData initialPlayerData;
@@ -24,255 +27,287 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<LocaleNotifier, PlayerDataNotifier>(
-      builder: (context, localeNotifier, playerDataNotifier, _) {
-        final playerData = playerDataNotifier.playerData ?? initialPlayerData;
+    final localeNotifier = context.watch<LocaleNotifier>();
+    final playerDataNotifier = context.watch<PlayerDataNotifier>();
+    final themeNotifier = context.watch<ThemeNotifier>();
+    final playerData = playerDataNotifier.playerData ?? initialPlayerData;
 
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(AppLocalizations.of(context).tr('app_title')),
-            centerTitle: true,
-            elevation: 0,
-            actions: [
-              PopupMenuButton<String>(
-                icon: StaticWidgets.languageIcon,
-                onSelected: (code) {
-                  localeNotifier.setLocale(Locale(code));
-                },
-                itemBuilder: (context) {
-                  return kTranslations.keys.map((code) {
-                    return PopupMenuItem(
-                      value: code,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(code),
-                          if (localeNotifier.locale?.languageCode == code)
-                            StaticWidgets.checkIcon,
-                        ],
-                      ),
-                    );
-                  }).toList();
-                },
-              ),
-            ],
-          ),
-          body: RefreshIndicator(
-            onRefresh: () async {
-              await playerDataNotifier.loadPlayerData(
-                playerData.playerName,
-                playerDataService,
-              );
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context).tr('app_title')),
+        centerTitle: true,
+        elevation: 0,
+        actions: [
+          PopupMenuButton<ThemeMode>(
+            icon: Icon(
+              themeNotifier.themeMode == ThemeMode.light
+                  ? Icons.light_mode
+                  : themeNotifier.themeMode == ThemeMode.dark
+                  ? Icons.dark_mode
+                  : Icons.brightness_auto,
+            ),
+            onSelected: (mode) {
+              themeNotifier.setThemeMode(mode);
             },
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final isTablet = constraints.maxWidth > 600;
-                final maxWidth = isTablet ? 600.0 : double.infinity;
+            itemBuilder: (context) {
+              return [
+                PopupMenuItem(
+                  value: ThemeMode.light,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(AppLocalizations.of(context).tr('mode_light')),
+                      if (themeNotifier.themeMode == ThemeMode.light)
+                        StaticWidgets.checkIcon,
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  value: ThemeMode.dark,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(AppLocalizations.of(context).tr('mode_dark')),
+                      if (themeNotifier.themeMode == ThemeMode.dark)
+                        StaticWidgets.checkIcon,
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  value: ThemeMode.system,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(AppLocalizations.of(context).tr('mode_system')),
+                      if (themeNotifier.themeMode == ThemeMode.system)
+                        StaticWidgets.checkIcon,
+                    ],
+                  ),
+                ),
+              ];
+            },
+          ),
+          PopupMenuButton<String>(
+            icon: StaticWidgets.languageIcon,
+            onSelected: (code) {
+              localeNotifier.setLocale(Locale(code));
+            },
+            itemBuilder: (context) {
+              return kTranslations.keys.map((code) {
+                return PopupMenuItem(
+                  value: code,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(code),
+                      if (localeNotifier.locale?.languageCode == code)
+                        StaticWidgets.checkIcon,
+                    ],
+                  ),
+                );
+              }).toList();
+            },
+          ),
+        ],
+      ),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await playerDataNotifier.loadPlayerData(
+            playerData.playerName,
+            playerDataService,
+          );
+        },
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isTablet = constraints.maxWidth > 600;
+            final maxWidth = isTablet ? 600.0 : double.infinity;
 
-                return ListView(
-                  padding: const EdgeInsets.all(16),
-                  children: [
-                    Center(
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(maxWidth: maxWidth),
-                        child: Column(
+            return ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                Center(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: maxWidth),
+                    child: Column(
+                      children: [
+                        // Encabezado con nombre del jugador
+                        Card(
+                          elevation: 2,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Padding(
+                            padding: StaticWidgets.padding20All,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  AppLocalizations.of(context).tr('welcome'),
+                                  style: Theme.of(context).textTheme.bodyMedium
+                                      ?.copyWith(color: Colors.grey.shade600),
+                                ),
+                                StaticWidgets.spacing4,
+                                Text(
+                                  playerData.playerName,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall
+                                      ?.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        StaticWidgets.spacing24,
+
+                        // Estadísticas
+                        Text(
+                          AppLocalizations.of(context).tr('statistics_header'),
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        StaticWidgets.spacing12,
+                        StatisticsSection(playerData: playerData),
+                        StaticWidgets.spacing24,
+
+                        // Niveles disponibles
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            // Encabezado con nombre del jugador
-                            Card(
-                              elevation: 2,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
+                            Text(
+                              AppLocalizations.of(
+                                context,
+                              ).tr('available_levels'),
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
+                            ),
+                            AppButton(
+                              label: '+1',
+                              onPressed: () async {
+                                final maxDigits = playerData.unlockedLevels
+                                    .map((l) => l.digits)
+                                    .reduce((a, b) => a > b ? a : b);
+                                final newDigits = maxDigits + 1;
+
+                                await playerDataService.addNewLevel(
+                                  playerData,
+                                  newDigits,
+                                );
+                                await playerDataNotifier.loadPlayerData(
+                                  playerData.playerName,
+                                  playerDataService,
+                                );
+
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        AppLocalizations.of(context).tr(
+                                          'new_level_added',
+                                          {'n': '$newDigits'},
+                                        ),
+                                      ),
+                                      duration: const Duration(seconds: 2),
+                                    ),
+                                  );
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                padding: StaticWidgets.paddingH16V12,
+                                backgroundColor: Theme.of(
+                                  context,
+                                ).primaryColor.withOpacity(0.2),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
                               ),
-                              child: Padding(
-                                padding: StaticWidgets.padding20All,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                            ),
+                          ],
+                        ),
+                        StaticWidgets.spacing12,
+                        LevelsGrid(
+                          levels: playerData.unlockedLevels,
+                          onLevelTap: (level) {
+                            if (!level.isUnlocked) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    AppLocalizations.of(
+                                      context,
+                                    ).tr('unlock_prev_level'),
+                                  ),
+                                ),
+                              );
+                              return;
+                            }
+
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => GameScreen(
+                                  initialPlayerData: playerData,
+                                  playerDataService: playerDataService,
+                                  level: level,
+                                ),
+                              ),
+                            ).then((_) {
+                              playerDataNotifier.loadPlayerData(
+                                playerData.playerName,
+                                playerDataService,
+                              );
+                            });
+                          },
+                        ),
+                        StaticWidgets.spacing24,
+
+                        // Información adicional
+                        Card(
+                          elevation: 1,
+                          color: Colors.blue.withOpacity(0.05),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Padding(
+                            padding: StaticWidgets.padding16All,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
                                   children: [
+                                    StaticWidgets.infoIcon,
+                                    StaticWidgets.spacingH8,
                                     Text(
                                       AppLocalizations.of(
                                         context,
-                                      ).tr('welcome'),
+                                      ).tr('tips_title'),
                                       style: Theme.of(context)
                                           .textTheme
-                                          .bodyMedium
-                                          ?.copyWith(
-                                            color: Colors.grey.shade600,
-                                          ),
-                                    ),
-                                    StaticWidgets.spacing4,
-                                    Text(
-                                      playerData.playerName,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headlineSmall
+                                          .titleSmall
                                           ?.copyWith(
                                             fontWeight: FontWeight.bold,
                                           ),
                                     ),
                                   ],
                                 ),
-                              ),
-                            ),
-                            StaticWidgets.spacing24,
-
-                            // Estadísticas
-                            Text(
-                              AppLocalizations.of(
-                                context,
-                              ).tr('statistics_header'),
-                              style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(fontWeight: FontWeight.bold),
-                            ),
-                            StaticWidgets.spacing12,
-                            StatisticsSection(playerData: playerData),
-                            StaticWidgets.spacing24,
-
-                            // Niveles disponibles
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
+                                StaticWidgets.spacing12,
                                 Text(
-                                  AppLocalizations.of(
-                                    context,
-                                  ).tr('available_levels'),
-                                  style: Theme.of(context).textTheme.titleMedium
-                                      ?.copyWith(fontWeight: FontWeight.bold),
-                                ),
-                                AppButton(
-                                  label: '+1',
-                                  onPressed: () async {
-                                    final maxDigits = playerData.unlockedLevels
-                                        .map((l) => l.digits)
-                                        .reduce((a, b) => a > b ? a : b);
-                                    final newDigits = maxDigits + 1;
-
-                                    await playerDataService.addNewLevel(
-                                      playerData,
-                                      newDigits,
-                                    );
-                                    await playerDataNotifier.loadPlayerData(
-                                      playerData.playerName,
-                                      playerDataService,
-                                    );
-
-                                    if (context.mounted) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            AppLocalizations.of(context).tr(
-                                              'new_level_added',
-                                              {'n': '$newDigits'},
-                                            ),
-                                          ),
-                                          duration: const Duration(seconds: 2),
-                                        ),
-                                      );
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    padding: StaticWidgets.paddingH16V12,
-                                    backgroundColor: Theme.of(
-                                      context,
-                                    ).primaryColor.withOpacity(0.2),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
+                                  AppLocalizations.of(context).tr('tips_text'),
+                                  style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               ],
                             ),
-                            StaticWidgets.spacing12,
-                            LevelsGrid(
-                              levels: playerData.unlockedLevels,
-                              onLevelTap: (level) {
-                                if (!level.isUnlocked) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        AppLocalizations.of(
-                                          context,
-                                        ).tr('unlock_prev_level'),
-                                      ),
-                                    ),
-                                  );
-                                  return;
-                                }
-
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => GameScreen(
-                                      initialPlayerData: playerData,
-                                      playerDataService: playerDataService,
-                                      level: level,
-                                    ),
-                                  ),
-                                ).then((_) {
-                                  playerDataNotifier.loadPlayerData(
-                                    playerData.playerName,
-                                    playerDataService,
-                                  );
-                                });
-                              },
-                            ),
-                            StaticWidgets.spacing24,
-
-                            // Información adicional
-                            Card(
-                              elevation: 1,
-                              color: Colors.blue.withOpacity(0.05),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Padding(
-                                padding: StaticWidgets.padding16All,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        StaticWidgets.infoIcon,
-                                        StaticWidgets.spacingH8,
-                                        Text(
-                                          AppLocalizations.of(
-                                            context,
-                                          ).tr('tips_title'),
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleSmall
-                                              ?.copyWith(
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                        ),
-                                      ],
-                                    ),
-                                    StaticWidgets.spacing12,
-                                    Text(
-                                      AppLocalizations.of(
-                                        context,
-                                      ).tr('tips_text'),
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.bodySmall,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            StaticWidgets.spacing32,
-                          ],
+                          ),
                         ),
-                      ),
+                        StaticWidgets.spacing32,
+                      ],
                     ),
-                  ],
-                );
-              },
-            ),
-          ),
-        );
-      },
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
     );
   }
 }

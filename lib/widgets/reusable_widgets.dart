@@ -144,10 +144,10 @@ class LevelCard extends StatelessWidget {
     return GestureDetector(
       onTap: isUnlocked ? onTap : null,
       child: Card(
-        elevation: isUnlocked ? 4 : 0,
+        elevation: isUnlocked ? 2 : 0,
         color: isUnlocked
-            ? Theme.of(context).primaryColor.withOpacity(0.1)
-            : Colors.grey.shade200,
+            ? Theme.of(context).cardColor.withOpacity(0.9)
+            : Theme.of(context).disabledColor.withOpacity(0.1),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Stack(
           children: [
@@ -161,8 +161,8 @@ class LevelCard extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: isUnlocked
-                          ? Theme.of(context).primaryColor
-                          : Colors.grey,
+                          ? Theme.of(context).textTheme.titleLarge!.color
+                          : Theme.of(context).textTheme.titleLarge!.color!.withOpacity(0.6),
                     ),
                   ),
                   StaticWidgets.spacing8,
@@ -173,30 +173,40 @@ class LevelCard extends StatelessWidget {
                           AppLocalizations.of(
                             context,
                           ).tr('best_score', {'score': '$highScore'}),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey.shade600,
-                          ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                fontSize: 12,
+                                color: Theme.of(
+                                  context,
+                                ).textTheme.bodySmall?.color?.withOpacity(0.8),
+                              ),
                         ),
                         if (totalSessions != null)
                           Text(
                             AppLocalizations.of(
                               context,
                             ).tr('total_games', {'count': '$totalSessions'}),
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: Colors.grey.shade500,
-                            ),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  fontSize: 11,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall
+                                      ?.color
+                                      ?.withOpacity(0.6),
+                                ),
                           ),
                       ],
                     )
                   else if (!isUnlocked)
                     Text(
                       AppLocalizations.of(context).tr('locked_requirement'),
-                      style: TextStyle(
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         fontSize: 12,
-                        color: Colors.grey.shade600,
                         fontStyle: FontStyle.italic,
+                        color: Theme.of(
+                          context,
+                        ).textTheme.bodySmall?.color?.withOpacity(0.7),
                       ),
                     ),
                 ],
